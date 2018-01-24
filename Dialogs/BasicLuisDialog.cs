@@ -80,12 +80,35 @@ namespace Microsoft.Bot.Sample.LuisBot
             context.Wait(MessageReceived);
         }
 
+        private async Task ShowLuisResult(IDialogContext context, LuisResult result)
+        {
+            // get recognized entities
+            string entities = this.BotEntityRecognition(Intent_TurnOff, result);
 
+            // round number
+            string roundedScore = result.Intents[0].Score != null ? (Math.Round(result.Intents[0].Score.Value, 2).ToString()) : "0";
+
+            await context.PostAsync($"**Query**: {result.Query}, **Intent**: {result.Intents[0].Intent}, **Score**: {roundedScore}. **Entities**: {entities}");
+            context.Wait(MessageReceived);
+        }        
+
+        // Entities found in result
         public string BotEntityRecognition(string intentName, LuisResult result)
         {
             IList<EntityRecommendation> listOfEntitiesFound = result.Entities;
-            StringBu
+            StringBuilder entityResults = new StringBuilder();
 
+            foreach (EntityRecommendation item in listOfEntitiesFound)
+            {
+                // Query: Turn on the [light]
+                // item.Type = "HomeAutomation.Device"
+                // item.Entity = "light"
+                entityResults.Append(item.Type.Replace("HomeAutomation.", "") + "=" + item.Entity + ",");
+            }
+            // remove last comma
+            entityResults.Remove(entityResults.Length - 1, 1);
+
+            return entityResults.ToString();
         }
     }
 }
