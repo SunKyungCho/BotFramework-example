@@ -2,9 +2,6 @@ using System;
 using System.Configuration;
 using System.Threading.Tasks;
 
-using System.Collections.Generic;
-using System.Text;
-
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
@@ -12,44 +9,31 @@ using Microsoft.Bot.Builder.Luis.Models;
 namespace Microsoft.Bot.Sample.LuisBot
 {
     // For more information about this template visit http://aka.ms/azurebots-csharp-luis
-
-    //CONSTANTS
-    //Entity
-    public const string Entity_Device = "HomeAutomation.Device";
-    public const string Entity_Room = "HomeAutomation.Room";
-    public const string Entity_Operation = "HomeAutomation.Operation";
-
-    //Intents
-    public const string Intent_TurnOn = "HomeAutomation.TurnOn";
-    public const string Intent_TurnOff = "HomeAutomation.TurnOff";
-    public const string Intent_None = "None";
-
-
-
+    [LuisModel("1460f92e-927c-4081-afbc-b393c28221ff", "2c6b8197c11e48c39b8ebb3277a7c69c")]
     [Serializable]
     public class BasicLuisDialog : LuisDialog<object>
     {
-        public BasicLuisDialog() : base(new LuisService(new LuisModelAttribute(
-            ConfigurationManager.AppSettings["LuisAppId"], 
-            ConfigurationManager.AppSettings["LuisAPIKey"], 
-            domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
+        //public BasicLuisDialog() : base(new LuisService(new LuisModelAttribute(
+            //ConfigurationManager.AppSettings["LuisAppId"], 
+            //ConfigurationManager.AppSettings["LuisAPIKey"], 
+            //domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
+        //{
+        //}
+          
+        [LuisIntent("")]
+        public async Task None(IDialogContext context, LuisResult result)
         {
+            await context.PostAsync("Sorry, I don't know what you wanted.");
+            context.Wait(MessageReceived);
+        }
+        [LuisIntent("CheckWeather")]
+        public async Task WeatherIntent(IDialogContext context, LuisResult result)
+        {
+            await this.CheckWeatherLuisResult(context, result);
         }
 
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
-        {
-            await this.ShowLuisResult(context, result);
-        }
-
-        [LuisIntent(Intent_TurnOn)]
-        public async Task OnIntent(IdialogContext context, LuisResult result)
-        {
-            await this.ShowLuisResult(context, result);
-        }
-
-        [LuisIntent(Intent_TurnOff)]
-        public async Task OffIntent(IdialogContext context, LuisResult result)
         {
             await this.ShowLuisResult(context, result);
         }
@@ -59,7 +43,7 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greeting")]
         public async Task GreetingIntent(IDialogContext context, LuisResult result)
         {
-            await this.ShowLuisResult(context, result);
+            await this.GreetingLuisResult(context, result);
         }
 
         [LuisIntent("Cancel")]
@@ -74,41 +58,22 @@ namespace Microsoft.Bot.Sample.LuisBot
             await this.ShowLuisResult(context, result);
         }
 
-        private async Task ShowLuisResult(IDialogContext context, LuisResult result) 
+       private async Task ShowLuisResult(IDialogContext context, LuisResult result) 
         {
             await context.PostAsync($"You have reached {result.Intents[0].Intent}. You said: {result.Query}");
             context.Wait(MessageReceived);
         }
 
-        private async Task ShowLuisResult(IDialogContext context, LuisResult result)
+        private async Task CheckWeatherLuisResult(IDialogContext context, LuisResult result)
         {
-            // get recognized entities
-            string entities = this.BotEntityRecognition(Intent_TurnOff, result);
-
-            // round number
-            string roundedScore = result.Intents[0].Score != null ? (Math.Round(result.Intents[0].Score.Value, 2).ToString()) : "0";
-
-            await context.PostAsync($"**Query**: {result.Query}, **Intent**: {result.Intents[0].Intent}, **Score**: {roundedScore}. **Entities**: {entities}");
+            await context.PostAsync("¹» ¹°¾î~ °Ü¿ïÀÌ´Ï±î ´ç¿¬È÷ Ãä´Ù.");
             context.Wait(MessageReceived);
-        }        
+        }
 
-        // Entities found in result
-        public string BotEntityRecognition(string intentName, LuisResult result)
+        private async Task GreetingLuisResult(IDialogContext context, LuisResult result)
         {
-            IList<EntityRecommendation> listOfEntitiesFound = result.Entities;
-            StringBuilder entityResults = new StringBuilder();
-
-            foreach (EntityRecommendation item in listOfEntitiesFound)
-            {
-                // Query: Turn on the [light]
-                // item.Type = "HomeAutomation.Device"
-                // item.Entity = "light"
-                entityResults.Append(item.Type.Replace("HomeAutomation.", "") + "=" + item.Entity + ",");
-            }
-            // remove last comma
-            entityResults.Remove(entityResults.Length - 1, 1);
-
-            return entityResults.ToString();
+            await context.PostAsync("¾È³ç~ ¹Ý°©´Ù.");
+            context.Wait(MessageReceived);
         }
     }
 }
