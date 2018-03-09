@@ -177,8 +177,14 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\MeetingRoomAttribute.cs" />
+    <Compile Include="Attributes\TimeAttribute.cs" />
+    <Compile Include="Attributes\DateAttribute.cs" />
+    <Compile Include="Actions\BookMeetingRoomAction.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Dialogs\BasicLuisDialog.cs" />
+    <Compile Include="Contans\CustomDayOffTypes.cs" />
+    <Compile Include="Dialogs\BookDialog.cs" />
+    <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -187,8 +193,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Properties\PublishProfiles\hellotoybot - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\hellotoybot-Web-Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -196,6 +200,17 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Microsoft.Cognitive.LUIS.ActionBinding.Nuget\Microsoft.Cognitive.LUIS.ActionBinding.Nuget.csproj">
+      <Project>{9f65c327-30fe-45c2-95de-ab984b268b0b}</Project>
+      <Name>Microsoft.Cognitive.LUIS.ActionBinding.Nuget</Name>
+    </ProjectReference>
+    <ProjectReference Include="Microsoft.Cognitive.LUIS.ActionBinding\Microsoft.Cognitive.LUIS.ActionBinding.csproj">
+      <Project>{ABDF486D-CBF1-43A7-9044-CA46B5AB2A88}</Project>
+      <Name>Microsoft.Cognitive.LUIS.ActionBinding</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
