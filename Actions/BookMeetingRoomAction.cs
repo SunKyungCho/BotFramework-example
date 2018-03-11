@@ -14,11 +14,11 @@ namespace LuisBot.Actions
     {
 
         [Required(ErrorMessage = "몇시부터 사용할 예정이신가요?")]
-        [Time(ErrorMessage ="asdfasdfasdf")]
+        //[Time(ErrorMessage ="asdfasdfasdf")]
         public string StartTime { get; set; }
 
         [Required(ErrorMessage = "몇시간 사용하실 건가요?")]
-        [Time]
+        //[Time]
         //[LuisActionBindingParam(BuiltinType = BuiltInGeographyTypes.City, Order = 1)]
         [LuisActionBindingParam(CustomType = "week", Order = 2)]
         public string Duration { get; set; }
@@ -26,7 +26,7 @@ namespace LuisBot.Actions
 
         [Required(ErrorMessage = "사용할 회의실은 어디인가요?")]
         //[LuisActionBindingParam(BuiltinType = BuiltInGeographyTypes.City, Order = 1)]
-        [LuisActionBindingParam(CustomType = "MeetingRoom", Order = 3)]
+        //[LuisActionBindingParam(CustomType = "MeetingRoom", Order = 3)]
         public string MeetinRoom { get; set; }
 
         public override Task<object> FulfillAsync()
