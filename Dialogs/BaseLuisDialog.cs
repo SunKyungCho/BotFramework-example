@@ -61,15 +61,16 @@ namespace BookingBot.Dialogs
 
 		protected virtual async Task ResumeAfterCallback(IDialogContext context, IAwaitable<object> result)
 		{
-			var message = await result;
+            var message = await result;
             if (message == null)
             {
+                await context.PostAsync("대화 종료.");
                 context.Done<object>(null);
             }
             else
             {
-                //TODO: 여기서 다시 다른 Dialog를 호출.
-                context.Wait(this.MessageReceived);
+                IAwaitable<IMessageActivity> re = Awaitable.FromItem<IMessageActivity>((IMessageActivity)message);
+                await this.MessageReceived(context, re);
             }
 		}
     }

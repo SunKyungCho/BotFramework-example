@@ -54,8 +54,8 @@ namespace BookingBot.Dialogs.SubDialogs
                 {
                     NewIntent = queryIntent.Intent
                 };
-                //await context.PostAsync("진행중인 회의실 예약을 취소합니다.");
-                context.Done<object>(item);
+                await context.PostAsync("진행중인 회의실 예약을 취소합니다.");
+                context.Done<object>(message);
             }
             else
             {

@@ -48,7 +48,8 @@ namespace BookingBot.Dialogs.SubDialogs
                 //사용자의 입력에 meetingRooom entity가 존재하는지만 체크
                 var availableMeetingRoom = string.Join(", ", roomNameList.ToArray());
                 await context.PostAsync($"사용가능한 회의실은 {availableMeetingRoom} 입니다.");
-                context.Wait(this.MessageReceivedAsync);
+                //context.Wait(this.MessageReceivedAsync);
+                context.Done<object>(null);
             }
             else
             {
