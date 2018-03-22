@@ -7,8 +7,9 @@ using Microsoft.Bot.Builder.Dialogs;
 using System.Web.Http.Description;
 using System.Net.Http;
 using System.Diagnostics;
+using BookingBot.Dialogs;
 
-namespace Microsoft.Bot.Sample.LuisBot
+namespace BookingBot
 {
     [BotAuthentication]
     public class MessagesController : ApiController
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             // check if activity is of type message
             if (activity.GetActivityType() == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new RootDialog());
+                await Conversation.SendAsync(activity, () => new MainLuisDialog());
             }
             else
             {

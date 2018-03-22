@@ -1,94 +1,73 @@
-using System;
-using System.Configuration;
-using System.Reflection;
+癤퓎sing System;
 using System.Threading.Tasks;
-using LuisBot.Actions;
-using Microsoft.Cognitive.LUIS.ActionBinding.Bot;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
-using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector;
 
-namespace Microsoft.Bot.Sample.LuisBot
+namespace BookingBot
 {
-    // For more information about this template visit http://aka.ms/azurebots-csharp-luis
+    [LuisModel("", "")]
     [Serializable]
-    public class RootDialog : LuisActionDialog<object>
+    public class RootDialog : BasicLuisDialog<object>
     {
-        public RootDialog() : base(
-            new Assembly[] { typeof(BookMeetingRoomAction).Assembly },
-            (action, context) =>
-            {
-                //if (action is RegisterAction)
-                //{
-                //    (action as RegisterAction).Dayoff = DateTime.Today;
-                //}
-            },
-            new LuisService(new LuisModelAttribute(
-                ConfigurationManager.AppSettings["LuisAppId"],
-                ConfigurationManager.AppSettings["LuisAPIKey"],
-                domain: ConfigurationManager.AppSettings["LuisAPIHostName"])
-))
+        [LuisIntent("")]
+        [LuisIntent("None")]
+        public async Task None(IDialogContext context, LuisResult result)
         {
-        }
-        //[LuisIntent("")]
-        //[LuisIntent("None")]
-        //public async Task NoneIntent(IDialogContext context, LuisResult result)
-        //{
-        //    await context.PostAsync($"미안해 그게 무슨말인지 모르겠어");
-        //    context.Wait(MessageReceived);
-        //}
-
-        [LuisIntent("MS.MeetingRoom.Book")]
-        public async Task TestIntentActionResultHandlerAsync(IDialogContext context, object actionResult)
-        {
-            // we know these actions return a string for their related intents,
-            // although you could have individual handlers for each intent
-            var message = context.MakeMessage();
-
-            message.Text = actionResult != null ? actionResult.ToString() : "Cannot resolve your query";
+            string message = $"Sorry, I did not understand '{result.Query}'. Type 'help' if you need assistance.";
 
             await context.PostAsync(message);
+
+            context.Wait(this.MessageReceived);
         }
 
-        //// Go to https://luis.ai and create a new intent, then train/publish your luis app.
-        //// Finally replace "Gretting" with the name of your newly created intent in the following handler
-        //[LuisIntent("MS.MeetingRoom.Book")]
-        ////public async Task GreetingIntent(IDialogContext context, LuisResult result)
-        //public async Task GreetingIntent(IDialogContext context, object actionResult)
-        //{
-        //    var message = context.MakeMessage();
-        //    message.Text = actionResult != null ? actionResult.ToString() : "무슨말인지 모르겠어";
-        //    await context.PostAsync(message);
-        //    //await this.ShowLuisResult(context, result);
-        //}
-        //[LuisIntent("Queryjet.DayOff.Register")]
-        //public async Task IntentActionResultHandlerAsync(IDialogContext context, object actionResult)
-        //{
-        //    //// we know these actions return a string for their related intents,
-        //    //// although you could have individual handlers for each intent
-        //    //await context.Forward(new RegisterDialog(result), base.ResumeAfterCallback, new Activity { Text = result.Query }, CancellationToken.None);
-        //    var message = context.MakeMessage();
-        //    message.Text = actionResult != null ? actionResult.ToString() : "무슨말인지 모르겠어";
-        //    await context.PostAsync(message);
-        //}
-
-        //[LuisIntent("Queryjet.DayOff.Suggestion")]
-        //public async Task CancelIntent(IDialogContext context, LuisResult result)
-        //{
-        //    await context.PostAsync($"휴가 사용할래?");
-        //    context.Wait(MessageReceived);
-        //}
-
-        //[LuisIntent("Queryjet.DayOff.Check")]
-        //public async Task HelpIntent(IDialogContext context, LuisResult result)
-        //{
-        //    await this.ShowLuisResult(context, result);
-        //}
-
-        private async Task ShowLuisResult(IDialogContext context, LuisResult result)
+        [LuisIntent("MS.MeetingRoom.Book")]
+        public async Task MeetingRoom(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync($"You have reached {result.Intents[0].Intent}. You said: {result.Query}");
-            context.Wait(MessageReceived);
+
+            await context.PostAsync("Hi! Try asking me things like 'search hotels in Seattle', 'search hotels near LAX airport' or 'show me the reviews of The Bot Resort'");
+
+            context.Wait(this.MessageReceived);
+        }
+
+        [LuisIntent("MS.MeetingRoom.CheckReservastion")]
+        public async Task CheckReservastion(IDialogContext context, IAwaitable<IMessageActivity> activity, LuisResult result)
+        {
+            string date = null;
+            string time = null;
+            if (result.Entities.Count > 0)
+            {
+                for (int i = 0; i <= result.Entities.Count; i++)
+                {
+                    if (result.Entities[i].Type == "Date")
+                    {
+                        date = result.Entities[i].Entity;
+                    }
+                    else if (result.Entities[i].Type == "Time")
+                    {
+                        time = result.Entities[i].Entity;
+                    }
+                }
+                String roomCheck = CheckRoom(date, time);
+                await context.PostAsync($"{roomCheck}");
+            }
+            await context.PostAsync($"");
+
+            context.Wait(this.MessageReceived);
+        }
+
+        private async Task MessageReceivedAsync(IDialogContext context, IAwaitable<object> result)
+        {
+            var activity = await result as Activity;
+
+            // calculate something for us to return
+            int length = (activity.Text ?? string.Empty).Length;
+
+            // return our reply to the user
+            await context.PostAsync($"You sent {activity.Text} which was {length} characters");
+
+            context.Wait(MessageReceivedAsync);
         }
     }
 }
